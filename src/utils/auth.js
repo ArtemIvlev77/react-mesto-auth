@@ -31,13 +31,11 @@ export const login = (email, password) => {
    }).then(getResponseData)
 }
 
-export const getContent = (token) => {
-  return fetch(`${BASE_URL}/users/me`, {
-    method: "GET",
+export const getContent = (jwt) => {
+  return fetch(`${this.baseURL}/users/me`, {
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  }).then(getResponseData);
-};
+        "Content-Type": "application/json",
+        "Authorization": `${jwt}`
+    }
+}).then(getResponseData);
+} 

@@ -4,7 +4,6 @@ class Api {
     this._headers = headers;
   }
 
-  //запрос на начальные карточки
   getInitialCards() {
     return fetch(`${this._url}/cards`, {
       method: "GET",
@@ -82,9 +81,9 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "https://mesto.nomoreparties.co/v1/cohort-20",
+  baseUrl: "https://api.mestoivlev.students.nomoredomains.icu",
   headers: {
-    authorization: "c991fcc7-9f95-4717-b779-f2f9eb8f4dbe",
+    Authorization: `Bearer ${localStorage.getItem("jwt")}`,
     "Content-Type": "application/json",
   },
 });
