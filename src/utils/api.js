@@ -53,12 +53,12 @@ class Api {
 
   toggleLikeCardStatus(cardId, isLiked) {
     if (isLiked) {
-      return fetch(`${this._url}/cards/likes/${cardId}`, {
+      return fetch(`${this._url}/cards/${cardId}/likes/`, {
         method: "PUT",
         headers: this._headers,
       }).then((res) => this._addResult(res));
     } else {
-      return fetch(`${this._url}/cards/likes/${cardId}`, {
+      return fetch(`${this._url}/cards/${cardId}/likes/`, {
         method: "DELETE",
         headers: this._headers,
       }).then((res) => this._addResult(res));
@@ -67,7 +67,7 @@ class Api {
 
   deleteCard(cardId, isOwn) {
     if (isOwn)
-      return fetch(`${this._url}/cards/${cardId}`, {
+      return fetch(`${this._url}/${cardId}/cards/`, {
         method: "DELETE",
         headers: this._headers,
       }).then((res) => this._addResult(res));

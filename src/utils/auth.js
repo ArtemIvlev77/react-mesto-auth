@@ -1,4 +1,4 @@
-export const BASE_URL = "https://auth.nomoreparties.co";
+export const BASE_URL = "https://api.mestoivlev.students.nomoredomains.icu";
 
 const getResponseData = (res) =>
   res.ok ? res.json() : Promise.reject(`Ошибка: ${res.statusText}`);
