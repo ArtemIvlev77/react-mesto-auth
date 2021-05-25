@@ -20,17 +20,6 @@ function App() {
     avatar: "",
   });
 
-  useEffect(() => {
-    api
-      .getUserInfo()
-      .then((data) => {
-        setCurrentUser(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
   const [cards, setCards] = useState([]);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
@@ -39,11 +28,11 @@ function App() {
   const [value, setValue] = useState({
     submit: "Сохранить",
   });
-  const [loggedIn, setLoggedIn] = useState({loggedIn: false});
+  const [loggedIn, setLoggedIn] = useState({ loggedIn: false });
   const history = useHistory();
   const [userData, setUserData] = useState({
-    email:'',
-    password:''
+    _id: null,
+    avatar: "",
   });
 
   useEffect(() => {
@@ -51,16 +40,27 @@ function App() {
   }, []);
 
   const checkToken = () => {
-    if (localStorage.getItem("jwt")) {
-      let jwt = localStorage.getItem("jwt");
-      auth.getContent(jwt).then(( email, password ) => {
-        if ({email, password}) {
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      api
+        .getUserInfo(jwt)
+        .then((user) => {
           setLoggedIn(true);
-          setUserData({email, password});
-        }
-      });
+          history.push("/");
+          setUserData(user.data);
+        })
+        .catch((e) => console.error(e.message));
+      api
+        .getInitialCards(jwt)
+        .then((cards) => {
+          setCards(cards);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
+
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
   }
@@ -97,7 +97,6 @@ function App() {
         console.log(err);
       });
   }, []);
-
 
   const handleCardLike = (card) => {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
@@ -141,17 +140,32 @@ function App() {
   }
 
   function handleUpdateUser({ name, about }) {
-    setValue({ ...value, submit: "Сохраняю данные..." });
-    api
-      .editUserInfo(name, about)
-      .then(() => setCurrentUser({ ...currentUser, name: name, about: about }))
-      .then(() => {
-        closeAllPopups();
-        setValue({ ...value, submit: "Сохранить" });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    setValue({
+      ...value,
+      submit: "Сохранение...",
+    });
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      api
+        .setUserInfo(name, about, jwt)
+        .then(() => {
+          setUserData({
+            ...currentUser,
+            name: name,
+            about: about,
+          });
+        })
+        .then(() => {
+          closeAllPopups();
+          setValue({
+            ...value,
+            submit: "Сохранить",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }
 
   function handleAvatarUpdate({ avatar }) {
@@ -202,12 +216,8 @@ function App() {
   };
 
   function handleLogin(email, password) {
-    return auth.login(email, password).then((email) => {
-      if ({email}) {
-        setLoggedIn(true);
-        setUserData(email)
-        history.push('/');
-      }
+    return auth.login(email, password).then((res) => {
+      localStorage.setItem("jwt", res.jwt);
     });
   }
 
@@ -217,13 +227,11 @@ function App() {
     localStorage.removeItem("jwt");
   }
 
-  
   useEffect(() => {
     if (loggedIn) {
       history.push("/");
     }
-  }, [loggedIn, history])
-
+  }, [loggedIn, history]);
 
   return (
     <CurrentUserContext.Provider value={currentUser}>

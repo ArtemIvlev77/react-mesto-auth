@@ -1,4 +1,5 @@
 export const BASE_URL = "https://api.mestoivlev.students.nomoredomains.icu";
+// export const BASE_URL = "http://localhost:3000";
 
 const getResponseData = (res) =>
   res.ok ? res.json() : Promise.reject(`Ошибка: ${res.statusText}`);
@@ -27,15 +28,15 @@ export const login = (email, password) => {
     body: JSON.stringify({
       email,
       password,
-    })
-   }).then(getResponseData)
-}
+    }),
+  }).then(getResponseData);
+};
 
 export const getContent = (jwt) => {
-  return fetch(`${this.baseURL}/users/me`, {
+  return fetch(`${BASE_URL}/users/me`, {
     headers: {
-        "Content-Type": "application/json",
-        "Authorization": `${jwt}`
-    }
-}).then(getResponseData);
-} 
+      "Content-Type": "application/json",
+      Authorization: `${jwt}`,
+    },
+  }).then(getResponseData);
+};

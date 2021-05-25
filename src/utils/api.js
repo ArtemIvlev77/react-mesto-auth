@@ -4,24 +4,33 @@ class Api {
     this._headers = headers;
   }
 
-  getInitialCards() {
+  getInitialCards(jwt) {
     return fetch(`${this._url}/cards`, {
       method: "GET",
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
     }).then((res) => this._addResult(res));
   }
 
-  getUserInfo() {
+  getUserInfo(jwt) {
     return fetch(`${this._url}/users/me`, {
       method: "GET",
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
     }).then((res) => this._addResult(res));
   }
 
-  editUserInfo(name, about) {
-    return fetch(`${this._url}/users/me/`, {
+  editUserInfo(name, about, jwt) {
+    return fetch(`${this._url}/users/me`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
       body: JSON.stringify({
         name: name,
         about: about,
@@ -29,20 +38,26 @@ class Api {
     }).then((res) => this._addResult(res));
   }
 
-  editUserAvatar(avatar) {
+  editUserAvatar(url, jwt) {
     return fetch(`${this._url}/users/me/avatar`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
       body: JSON.stringify({
-        avatar: avatar,
+        avatar: url,
       }),
     }).then((res) => this._addResult(res));
   }
 
-  addPlace(name, link) {
+  addPlace(name, link, jwt) {
     return fetch(`${this._url}/cards`, {
       method: "POST",
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
       body: JSON.stringify({
         name: name,
         link: link,
@@ -50,26 +65,34 @@ class Api {
     }).then((res) => this._addResult(res));
   }
 
-  toggleLikeCardStatus(cardId, isLiked) {
+  toggleLikeCardStatus(cardId, isLiked, jwt) {
     if (isLiked) {
-      return fetch(`${this._url}/cards/${cardId}/likes/`, {
+      return fetch(`${this._url}/cards/${cardId}/likes`, {
         method: "PUT",
-        headers: this._headers,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
       }).then((res) => this._addResult(res));
     } else {
-      return fetch(`${this._url}/cards/${cardId}/likes/`, {
+      return fetch(`${this._url}/cards/${cardId}/likes`, {
         method: "DELETE",
-        headers: this._headers,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
       }).then((res) => this._addResult(res));
     }
   }
 
-  deleteCard(cardId, isOwn) {
-    if (isOwn)
-      return fetch(`${this._url}/${cardId}/cards/`, {
-        method: "DELETE",
-        headers: this._headers,
-      }).then((res) => this._addResult(res));
+  deleteCard(cardId, jwt) {
+    return fetch(`${this._url}/cards/${cardId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
+    }).then((res) => this._addResult(res));
   }
 
   _addResult(res) {
